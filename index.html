@@ -1,0 +1,1626 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MONO — Техническая одежда</title>
+<meta name="description" content="MONO — монохромная техническая одежда. Чёрное. Белое. Без компромиссов.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter+Tight:wght@400;500;600&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   ДИЗАЙН-ТОКЕНЫ
+   ============================================================ */
+:root{
+  --ink:#0A0A0A; --paper:#F2F2F2; --muted:#2B2B2B; --muted-2:#6B6B6B;
+  --line:rgba(255,255,255,.14); --line-dark:rgba(0,0,0,.16);
+  --red:#DC2626;
+  --ease:cubic-bezier(.25,.1,.25,1);
+  --ease-out:cubic-bezier(.16,1,.3,1);
+  --dur-fast:180ms; --dur:360ms; --dur-slow:600ms;
+  --fs-display:clamp(38px,5.5vw,84px);
+  --fs-h2:clamp(22px,3.8vw,52px);
+  --fs-h3:clamp(17px,1.9vw,23px);
+  --fs-meta:clamp(8px,.7vw,10px);
+  --section-pad:clamp(56px,7vw,88px);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
+body{background:var(--paper);color:var(--ink);font-family:'Inter Tight',system-ui,sans-serif;font-size:14.5px;line-height:1.4;-webkit-font-smoothing:antialiased;overflow-x:hidden;cursor:none}
+body.is-loading{overflow:hidden;height:100vh}
+a,button{cursor:none}
+img{display:block;max-width:100%}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:none}
+::selection{background:var(--ink);color:var(--paper)}
+:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+
+/* Плёночное зерно */
+body::after{
+  content:"";position:fixed;inset:0;z-index:9998;pointer-events:none;opacity:.028;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  mix-blend-mode:multiply;
+}
+
+.reading-progress{position:fixed;top:0;left:0;height:2px;background:var(--red);z-index:10001;width:0%;transition:width .1s linear}
+
+.meta{font-family:'Space Grotesk',monospace;font-size:var(--fs-meta);letter-spacing:.1em;text-transform:uppercase;font-weight:500}
+.display{font-family:'Anton',sans-serif;font-weight:400;text-transform:uppercase;line-height:.88;letter-spacing:-.01em}
+.h2{font-family:'Anton',sans-serif;font-weight:400;text-transform:uppercase;font-size:var(--fs-h2);line-height:.9}
+.wrap{width:min(1320px,calc(100% - 36px));margin-inline:auto}
+@media(max-width:640px){.wrap{width:calc(100% - 20px)}}
+
+/* ============================================================
+   КАСТОМНЫЙ КУРСОР
+   ============================================================ */
+.cursor{position:fixed;top:0;left:0;width:10px;height:10px;background:var(--ink);border-radius:50%;pointer-events:none;z-index:100000;transform:translate(-50%,-50%);transition:width .2s var(--ease),height .2s var(--ease),background .2s var(--ease);mix-blend-mode:difference}
+.cursor.is-hover{width:40px;height:40px;background:rgba(10,10,10,.15);border:1px solid var(--ink);mix-blend-mode:normal}
+.cursor-follower{position:fixed;top:0;left:0;width:28px;height:28px;border:1px solid var(--ink);border-radius:50%;pointer-events:none;z-index:99999;transform:translate(-50%,-50%);transition:transform .15s var(--ease-out),opacity .2s;opacity:0;mix-blend-mode:difference}
+body:hover .cursor-follower{opacity:.6}
+
+#particles{position:fixed;inset:0;z-index:9997;pointer-events:none;opacity:.5}
+
+/* ============================================================
+   ПРЕЛОАДЕР
+   ============================================================ */
+.preloader{position:fixed;inset:0;z-index:10000;background:var(--ink);color:var(--paper);display:grid;place-items:center;overflow:hidden;clip-path:inset(0 0 0 0)}
+.preloader.is-done{clip-path:inset(0 0 100% 0);transition:clip-path .8s var(--ease-out)}
+.preloader__grid{position:absolute;inset:0;opacity:.07;background-image:linear-gradient(var(--paper) 1px,transparent 1px),linear-gradient(90deg,var(--paper) 1px,transparent 1px);background-size:56px 56px;animation:gridDrift 5s linear infinite}
+@keyframes gridDrift{to{background-position:56px 56px,56px 56px}}
+.preloader__inner{position:relative;text-align:center;z-index:1}
+.preloader__logo{font-family:'Anton',sans-serif;font-size:clamp(48px,9vw,128px);line-height:.8;letter-spacing:-.02em;text-transform:uppercase;opacity:0;transform:translateY(24px);animation:preIn .7s var(--ease-out) .15s forwards}
+.preloader__sub{margin-top:10px;opacity:0;animation:preIn .5s var(--ease-out) .4s forwards}
+.preloader__counter{margin-top:16px;font-family:'Space Grotesk',monospace;font-size:clamp(9px,1.1vw,13px);letter-spacing:.18em;opacity:0;animation:preIn .4s var(--ease-out) .55s forwards}
+@keyframes preIn{to{opacity:1;transform:none}}
+
+/* ============================================================
+   ШАПКА
+   ============================================================ */
+.header{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(10,10,10,.85);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,.1);color:var(--paper);transition:background .4s var(--ease),box-shadow .4s var(--ease)}
+.header.is-scrolled{background:rgba(10,10,10,.95);box-shadow:0 8px 32px rgba(0,0,0,.4)}
+.header__inner{display:flex;align-items:center;justify-content:space-between;height:64px;position:relative;gap:16px}
+.header__brand{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.header__logo{font-family:'Anton',sans-serif;font-size:22px;letter-spacing:-.02em;text-transform:uppercase;white-space:nowrap}
+.header__nav{display:flex;gap:24px;flex-shrink:1;overflow:hidden}
+.header__nav a{font-family:'Space Grotesk',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;position:relative;padding:2px 0;white-space:nowrap;transition:color .3s}
+.header__nav a:hover{color:var(--red)}
+.header__nav a::after{content:"";position:absolute;left:0;bottom:0;width:0;height:1px;background:currentColor;transition:width var(--dur) var(--ease)}
+.header__nav a:hover::after{width:100%}
+.header__right{display:flex;align-items:center;gap:16px;flex-shrink:0}
+.header__cart{display:flex;align-items:center;gap:6px;font-family:'Space Grotesk',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;transition:opacity .3s}
+.header__cart:hover{opacity:.7}
+.cart-count{display:inline-grid;place-items:center;min-width:18px;height:18px;padding:0 5px;background:var(--red);color:#fff;font-size:9px;border-radius:999px;line-height:1;font-weight:700}
+@media(max-width:768px){.header__nav{display:none}}
+
+/* ============================================================
+   HERO
+   ============================================================ */
+.hero{min-height:100svh;padding-top:64px;display:flex;flex-direction:column;justify-content:center;position:relative;overflow:hidden;background:#0A0A0A}
+.hero__media{position:absolute;inset:0;z-index:0;overflow:hidden}
+.hero__media video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.hero__fallback{position:absolute;inset:0;background:radial-gradient(circle at 20% 30%,rgba(255,255,255,.1),transparent 50%),radial-gradient(circle at 80% 70%,rgba(255,255,255,.05),transparent 50%),linear-gradient(135deg,#0A0A0A 0%,#1E1E1E 50%,#0A0A0A 100%);background-size:200% 200%;animation:heroDrift 10s ease-in-out infinite alternate}
+@keyframes heroDrift{to{background-position:100% 100%,0% 0%,100% 50%}}
+.hero__grid-overlay{position:absolute;inset:0;z-index:1;pointer-events:none;background-image:linear-gradient(rgba(255,255,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.03) 1px,transparent 1px);background-size:80px 80px;mask-image:radial-gradient(ellipse at center,black 30%,transparent 70%);animation:gridMove 22s linear infinite}
+@keyframes gridMove{to{background-position:80px 80px}}
+.hero__content{position:relative;z-index:2;padding-bottom:36px;color:var(--paper);width:100%}
+.hero__layout{display:grid;grid-template-columns:1.1fr .9fr;align-items:center;gap:40px;width:100%}
+.hero__left{display:flex;flex-direction:column;gap:28px}
+.hero__eyebrow{display:flex;gap:10px;align-items:center}
+.hero__eyebrow .dot{width:5px;height:5px;background:var(--red);border-radius:50%;animation:pulse 2s ease infinite}
+@keyframes pulse{50%{opacity:.3}}
+.hero__title{font-size:var(--fs-display);color:var(--paper);max-width:100%;line-height:.9}
+.hero__title .line{display:block;overflow:hidden;padding-bottom:0.1em}
+.hero__title .line-inner{display:block;transform:translateY(110%);transition:transform .9s var(--ease-out)}
+.hero__title em{font-style:normal;display:block;padding-left:8vw;color:rgba(242,242,242,.5)}
+
+/* 3D-объект в hero */
+.hero__right{position:relative;width:100%;height:100%;min-height:400px;display:flex;align-items:center;justify-content:center}
+.hero__object{width:100%;height:clamp(400px, 60vh, 700px);position:relative;cursor:grab;background:transparent}
+.hero__object:active{cursor:grabbing}
+.hero__object canvas{display:block;width:100%;height:100%}
+.hero__object-loader{position:absolute;inset:0;display:grid;place-items:center;color:rgba(255,255,255,.5);font-family:'Space Grotesk',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;pointer-events:none;transition:opacity .3s}
+.hero__object-loader.is-hidden{opacity:0}
+.hero__object-caption{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);color:rgba(255,255,255,.35);font-size:8px;letter-spacing:.1em;pointer-events:none}
+
+.hero__bottom{display:flex;flex-direction:column;gap:20px;align-items:flex-start;margin-top:10px}
+.hero__desc{max-width:280px;font-size:13px;color:rgba(255,255,255,.6)}
+.hero__cta{display:inline-flex;align-items:center;gap:10px;border:1px solid var(--paper);padding:14px 26px;font-family:'Space Grotesk',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;transition:background var(--dur),color var(--dur),transform .3s;white-space:nowrap;background:transparent;color:var(--paper);position:relative;overflow:hidden}
+.hero__cta::before{content:"";position:absolute;inset:0;background:var(--paper);transform:scaleX(0);transform-origin:right;transition:transform .4s var(--ease-out);z-index:0}
+.hero__cta:hover::before{transform:scaleX(1);transform-origin:left}
+.hero__cta span{position:relative;z-index:1}
+.hero__cta:hover span{color:var(--ink)}
+.hero__cta:hover{color:var(--ink);transform:translateY(-2px)}
+.hero__cta svg{width:13px;height:13px;transition:transform var(--dur);position:relative;z-index:1}
+.hero__cta:hover svg{transform:translateX(3px);color:var(--ink)}
+.scroll-hint{position:absolute;right:14px;bottom:14px;z-index:3;writing-mode:vertical-rl;font-family:'Space Grotesk',monospace;font-size:8px;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.4);display:flex;align-items:center;gap:5px}
+.scroll-hint::after{content:"";width:1px;height:28px;background:var(--paper);animation:scrollLine 1.6s var(--ease) infinite}
+@keyframes scrollLine{0%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}51%{transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+@media(max-width:900px){
+  .hero__layout{grid-template-columns:1fr;gap:20px}
+  .hero__title em{padding-left:0}
+  .hero__object{height:400px}
+  .hero__right{min-height:auto}
+  .scroll-hint{display:none}
+}
+
+/* Бегущая строка */
+.marquee{overflow:hidden;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:9px 0;background:var(--ink);color:var(--paper);white-space:nowrap}
+.marquee__track{display:inline-flex;gap:0;animation:marquee 18s linear infinite;will-change:transform}
+.marquee:hover .marquee__track{animation-duration:8s}
+.marquee__track span{font-family:'Anton',sans-serif;font-size:clamp(13px,1.8vw,20px);text-transform:uppercase;letter-spacing:.04em;padding-right:28px;opacity:.65}
+.marquee__track span::after{content:"—";margin-left:28px;opacity:.3}
+@keyframes marquee{to{transform:translateX(-50%)}}
+
+/* ============================================================
+   СЕКЦИИ
+   ============================================================ */
+.section{padding:var(--section-pad) 0;border-top:1px solid var(--line-dark);position:relative;overflow:hidden}
+.section__head{display:flex;justify-content:space-between;align-items:flex-end;gap:18px;margin-bottom:32px}
+.section__index{font-family:'Space Grotesk',monospace;font-size:9px;letter-spacing:.14em;color:var(--muted-2)}
+@media(max-width:640px){.section__head{flex-direction:column;align-items:flex-start;gap:6px;margin-bottom:24px}}
+
+/* ============================================================
+   ТОВАРЫ
+   ============================================================ */
+.products{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line-dark);border:1px solid var(--line-dark);perspective:1200px}
+.product{background:var(--paper);padding:12px;display:flex;flex-direction:column;gap:10px;position:relative;transition:background var(--dur),transform .5s var(--ease-out);transform-style:preserve-3d;will-change:transform;cursor:pointer}
+.product:hover{background:#EAEAEA}
+.product__media{position:relative;overflow:hidden;aspect-ratio:3/4;background:#DFDFDF;transform:translateZ(30px);transition:transform .5s var(--ease-out)}
+.product__media img{width:100%;height:100%;object-fit:cover;filter:grayscale(1) contrast(1.1);transition:filter var(--dur-slow),transform var(--dur-slow)}
+.product:hover .product__media img{filter:grayscale(0) contrast(1);transform:scale(1.05)}
+.product__tag{position:absolute;top:7px;left:7px;background:var(--ink);color:var(--paper);padding:3px 7px;font-family:'Space Grotesk',monospace;font-size:7px;letter-spacing:.1em;text-transform:uppercase;transform:translateZ(40px)}
+.product__name{font-family:'Anton',sans-serif;font-size:clamp(14px,1.5vw,19px);text-transform:uppercase;line-height:1;transform:translateZ(20px)}
+.product__meta{font-family:'Space Grotesk',monospace;font-size:8px;letter-spacing:.1em;color:var(--muted-2);margin-top:3px;text-transform:uppercase;transform:translateZ(10px)}
+.product__price{font-family:'Space Grotesk',monospace;font-size:12px;font-weight:700;white-space:nowrap}
+.product__actions{display:flex;gap:5px;margin-top:auto}
+.btn-add{flex:1;display:inline-flex;align-items:center;justify-content:center;background:var(--ink);color:var(--paper);padding:14px 10px;font-family:'Space Grotesk',monospace;font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;transition:opacity var(--dur),transform .2s;border:2px solid var(--ink)}
+.btn-add:hover{opacity:.85;transform:scale(1.02)}
+.btn-add.is-added{background:var(--red);border-color:var(--red)}
+@media(max-width:900px){.products{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:500px){.products{grid-template-columns:1fr}}
+
+/* ============================================================
+   3D-ВИТРИНА
+   ============================================================ */
+.showcase{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line)}
+.viewer{position:relative;background:#111;aspect-ratio:1/1;overflow:hidden;min-height:240px}
+.viewer canvas{display:block;width:100%;height:100%;cursor:grab}
+.viewer canvas:active{cursor:grabbing}
+.viewer__label{position:absolute;top:10px;left:10px;z-index:2;color:var(--paper);font-family:'Space Grotesk',monospace;font-size:8px;letter-spacing:.12em;text-transform:uppercase;opacity:.7}
+.viewer__hint{position:absolute;bottom:10px;left:10px;z-index:2;color:var(--paper);font-family:'Space Grotesk',monospace;font-size:7px;letter-spacing:.08em;text-transform:uppercase;opacity:.4;transition:opacity var(--dur)}
+.viewer:hover .viewer__hint{opacity:1}
+.viewer__recenter{position:absolute;top:10px;right:10px;z-index:2;color:var(--paper);border:1px solid rgba(255,255,255,.35);padding:5px 9px;font-family:'Space Grotesk',monospace;font-size:7px;letter-spacing:.08em;text-transform:uppercase;transition:background var(--dur),color var(--dur)}
+.viewer__recenter:hover{background:var(--paper);color:var(--ink)}
+.viewer__fallback{position:absolute;inset:0;display:none;place-items:center;color:var(--paper);font-family:'Space Grotesk',monospace;font-size:8px;letter-spacing:.08em;text-transform:uppercase;text-align:center;padding:16px}
+.viewer__loader{position:absolute;inset:0;display:grid;place-items:center;color:var(--paper);font-family:'Space Grotesk',monospace;font-size:8px;letter-spacing:.12em;text-transform:uppercase;opacity:.5;pointer-events:none;transition:opacity var(--dur)}
+.viewer__loader.is-hidden{opacity:0}
+@media(max-width:768px){.showcase{grid-template-columns:1fr}}
+
+/* ============================================================
+   ЗАМЕТКИ
+   ============================================================ */
+.layers{position:relative;min-height:480px;margin-top:16px;margin-bottom:48px;overflow:hidden}
+.layer{position:absolute;overflow:hidden;background:#D8D8D8;box-shadow:0 16px 40px rgba(0,0,0,.12);will-change:transform}
+.layer img{width:100%;height:100%;object-fit:cover;filter:grayscale(1) contrast(1.15);transition:filter var(--dur-slow)}
+.layer:hover img{filter:grayscale(0) contrast(1)}
+.layer figcaption{position:absolute;left:0;right:0;bottom:0;padding:10px 12px;background:linear-gradient(transparent,rgba(0,0,0,.82));color:var(--paper);font-family:'Space Grotesk',monospace;font-size:7px;letter-spacing:.08em;text-transform:uppercase}
+.layer--1{width:42%;top:0;left:0;z-index:1;aspect-ratio:3/4}
+.layer--2{width:36%;top:16%;left:34%;z-index:2;aspect-ratio:4/5}
+.layer--3{width:30%;top:5%;right:0;z-index:3;aspect-ratio:1/1}
+@media(max-width:768px){.layers{min-height:auto;display:flex;flex-direction:column;gap:10px;overflow:visible}.layer{position:relative;width:100%;aspect-ratio:4/3;box-shadow:none}}
+
+/* ============================================================
+   ПОЧЕМУ МЫ / ПРИНЦИПЫ
+   ============================================================ */
+.why-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line-dark);border:1px solid var(--line-dark)}
+.why-card{background:var(--paper);padding:24px 18px;display:flex;flex-direction:column;gap:12px;min-height:180px;transition:background var(--dur),color var(--dur),transform .4s var(--ease-out)}
+.why-card:hover{background:var(--ink);color:var(--paper);transform:translateY(-4px)}
+.why-card:hover .why-card__num{color:var(--red)}
+.why-card__num{font-family:'Anton',sans-serif;font-size:42px;line-height:.8;color:var(--line-dark);transition:color var(--dur)}
+.why-card__title{font-family:'Anton',sans-serif;font-size:18px;text-transform:uppercase;line-height:.95}
+.why-card__text{font-size:11.5px;color:var(--muted-2);margin-top:auto;max-width:24ch}
+.why-card:hover .why-card__text{color:rgba(255,255,255,.6)}
+@media(max-width:768px){.why-grid{grid-template-columns:1fr}}
+.principles{display:grid;grid-template-columns:repeat(2,1fr);gap:28px 40px;margin-top:16px}
+.principle{display:flex;gap:14px;padding-top:14px;border-top:1px solid var(--line-dark)}
+.principle__n{font-family:'Space Grotesk',monospace;font-size:9px;letter-spacing:.1em;color:var(--muted-2);padding-top:2px}
+.principle__title{font-family:'Anton',sans-serif;font-size:16px;text-transform:uppercase;line-height:1;margin-bottom:5px}
+.principle__text{font-size:11.5px;color:var(--muted-2);max-width:34ch}
+@media(max-width:768px){.principles{grid-template-columns:1fr}}
+
+/* ============================================================
+   КОНТАКТЫ
+   ============================================================ */
+.contacts{padding:var(--section-pad) 0 0;border-top:1px solid var(--line-dark)}
+.contacts__grid{display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:start}
+.contacts__map{position:relative;border:1px solid var(--line-dark);overflow:hidden;aspect-ratio:4/3;background:#E0E0E0}
+.contacts__map iframe{width:100%;height:100%;border:0;filter:grayscale(1) contrast(1.05);transition:filter var(--dur-slow)}
+.contacts__map:hover iframe{filter:grayscale(0) contrast(1)}
+.contacts__info{display:flex;flex-direction:column;gap:16px}
+.contact-line{display:flex;flex-direction:column;gap:3px;padding-top:10px;border-top:1px solid var(--line-dark)}
+.contact-line .meta{color:var(--muted-2)}
+.contact-line strong{font-family:'Anton',sans-serif;font-size:clamp(15px,1.7vw,20px);text-transform:uppercase;line-height:1;font-weight:400}
+.contact-line a:hover{text-decoration:underline}
+@media(max-width:768px){.contacts__grid{grid-template-columns:1fr}}
+
+/* ============================================================
+   ПОДВАЛ
+   ============================================================ */
+.footer{background:var(--ink);color:var(--paper);margin-top:56px;padding:40px 0 0;overflow:hidden;position:relative;z-index:10}
+.footer__top{display:grid;grid-template-columns:1.2fr repeat(3,1fr);gap:28px;align-items:start}
+.footer__brand{font-family:'Anton',sans-serif;font-size:clamp(22px,2.8vw,32px);text-transform:uppercase;line-height:.9}
+.footer__tagline{margin-top:8px;font-size:11px;color:rgba(255,255,255,.4);max-width:22ch}
+.footer__col{display:flex;flex-direction:column;gap:6px}
+.footer__col .meta{color:rgba(255,255,255,.3);margin-bottom:2px}
+.footer__col a{font-size:11px;opacity:.6;transition:opacity var(--dur)}
+.footer__col a:hover{opacity:1}
+.footer__ghost{font-family:'Anton',sans-serif;font-size:clamp(50px,12vw,160px);line-height:.75;text-align:center;color:rgba(255,255,255,.04);margin-top:28px;user-select:none;pointer-events:none;white-space:nowrap}
+.footer__bottom{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:16px 0;border-top:1px solid rgba(255,255,255,.1);font-family:'Space Grotesk',monospace;font-size:8px;letter-spacing:.06em;color:rgba(255,255,255,.3);text-transform:uppercase}
+.admin-trigger{opacity:.3;transition:opacity var(--dur)}
+.admin-trigger:hover{opacity:1}
+@media(max-width:768px){.footer__top{grid-template-columns:1fr 1fr}}
+
+/* ============================================================
+   АДМИН-ПАНЕЛЬ
+   ============================================================ */
+.admin{display:none;position:fixed;inset:0;z-index:9000;background:var(--paper);overflow-y:auto}
+.admin.is-open{display:block}
+.admin__bar{position:sticky;top:0;z-index:10;background:var(--ink);color:var(--paper);border-bottom:1px solid var(--line);backdrop-filter:blur(12px)}
+.admin__bar-inner{display:flex;align-items:center;justify-content:space-between;gap:10px;height:46px}
+.admin__brand{font-family:'Anton',sans-serif;font-size:16px;text-transform:uppercase}
+.admin__tabs{display:flex;gap:1px;overflow-x:auto}
+.admin__tab{padding:7px 10px;font-family:'Space Grotesk',monospace;font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.5);transition:background var(--dur),color var(--dur);white-space:nowrap}
+.admin__tab.is-active{background:var(--paper);color:var(--ink)}
+.admin__close{border:1px solid rgba(255,255,255,.3);padding:5px 10px;font-family:'Space Grotesk',monospace;font-size:8px;letter-spacing:.1em;text-transform:uppercase;transition:background var(--dur),color var(--dur)}
+.admin__close:hover{background:var(--paper);color:var(--ink)}
+.admin__body{padding:24px 0 56px}
+.admin-panel{display:none}
+.admin-panel.is-active{display:block}
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line-dark);border:1px solid var(--line-dark);margin-bottom:20px}
+.kpi{background:var(--paper);padding:16px}
+.kpi__label{font-family:'Space Grotesk',monospace;font-size:7px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted-2)}
+.kpi__value{font-family:'Anton',sans-serif;font-size:clamp(24px,3.5vw,38px);line-height:.9;margin-top:6px}
+.kpi__sub{font-family:'Space Grotesk',monospace;font-size:8px;color:var(--muted-2);margin-top:5px}
+.admin-table{width:100%;border-collapse:collapse;font-size:11px}
+.admin-table th{text-align:left;font-family:'Space Grotesk',monospace;font-size:7px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted-2);padding:8px 6px;border-bottom:1px solid var(--line-dark)}
+.admin-table td{padding:9px 6px;border-bottom:1px solid var(--line-dark);vertical-align:middle}
+.admin-table tr:last-child td{border-bottom:none}
+.status{display:inline-flex;align-items:center;gap:4px;font-family:'Space Grotesk',monospace;font-size:7px;letter-spacing:.06em;text-transform:uppercase}
+.status::before{content:"";width:4px;height:4px;border-radius:50%;background:var(--red)}
+.status--done::before{background:#16A34A}
+.admin-form{display:grid;gap:12px;max-width:560px}
+.field{display:flex;flex-direction:column;gap:4px}
+.field label{font-family:'Space Grotesk',monospace;font-size:7px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted-2)}
+.field input,.field textarea{padding:9px 11px;border:1px solid var(--line-dark);background:transparent;font:inherit;font-size:12px;transition:border-color var(--dur)}
+.field input:focus,.field textarea:focus{outline:none;border-color:var(--ink)}
+.field textarea{min-height:60px;resize:vertical}
+.btn-dark{align-self:flex-start;background:var(--ink);color:var(--paper);padding:10px 20px;font-family:'Space Grotesk',monospace;font-size:8px;letter-spacing:.1em;text-transform:uppercase;transition:opacity var(--dur)}
+.btn-dark:hover{opacity:.75}
+.admin-empty{padding:30px 0;text-align:center;font-family:'Space Grotesk',monospace;font-size:9px;letter-spacing:.06em;color:var(--muted-2);text-transform:uppercase;border:1px dashed var(--line-dark)}
+.admin-actions{display:flex;gap:10px;margin-bottom:20px}
+@media(max-width:768px){.kpi-grid{grid-template-columns:repeat(2,1fr)}.admin__bar-inner{flex-wrap:wrap;height:auto;padding:8px 0}.admin__tabs{order:3;width:100%}}
+
+/* ============================================================
+   МОДАЛКИ (КОРЗИНА И ПОДДЕРЖКА)
+   ============================================================ */
+.modal-overlay{position:fixed;inset:0;z-index:9500;display:grid;place-items:center;padding:20px;opacity:0;visibility:hidden;transition:opacity 0.3s var(--ease),visibility 0.3s}
+.modal-overlay.is-open{opacity:1;visibility:visible}
+.modal-backdrop{position:absolute;inset:0;background:rgba(10,10,10,.6);backdrop-filter:blur(4px)}
+.modal-content{position:relative;background:var(--paper);z-index:1;width:100%;max-width:640px;max-height:90vh;overflow-y:auto;padding:28px 24px;border:1px solid var(--line-dark);box-shadow:0 24px 64px rgba(0,0,0,.2);transform:translateY(30px) scale(0.96);transition:transform 0.4s var(--ease-out)}
+.modal-overlay.is-open .modal-content{transform:translateY(0) scale(1)}
+.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+.modal-title{font-family:'Anton',sans-serif;font-size:clamp(20px,3vw,32px);text-transform:uppercase;line-height:.9}
+.modal-close{font-family:'Space Grotesk',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;border:1px solid var(--line-dark);padding:6px 12px;transition:background var(--dur),color var(--dur)}
+.modal-close:hover{background:var(--ink);color:var(--paper)}
+@media(max-width:640px){.modal-content{padding:20px 16px}}
+
+.cart-list{display:flex;flex-direction:column;gap:10px;margin-bottom:16px;max-height:240px;overflow-y:auto;border-bottom:1px solid var(--line-dark);padding-bottom:12px}
+.cart-item{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:12px}
+.cart-item__info{display:flex;flex-direction:column;gap:2px}
+.cart-item__name{font-family:'Anton',sans-serif;font-size:14px;text-transform:uppercase;line-height:1}
+.cart-item__meta{font-family:'Space Grotesk',monospace;font-size:7px;letter-spacing:.08em;color:var(--muted-2);text-transform:uppercase}
+.cart-item__price{font-family:'Space Grotesk',monospace;font-size:11px;font-weight:700}
+.cart-item__remove{font-family:'Space Grotesk',monospace;font-size:7px;letter-spacing:.08em;text-transform:uppercase;color:var(--red);border-bottom:1px solid var(--red);padding-bottom:1px}
+.cart-total{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--line-dark);margin-bottom:16px}
+.cart-total__label{font-family:'Space Grotesk',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase}
+.cart-total__value{font-family:'Anton',sans-serif;font-size:24px;line-height:1}
+.cart-form{display:flex;flex-direction:column;gap:10px}
+.cart-form .field{display:flex;flex-direction:column;gap:4px}
+.cart-form label{font-family:'Space Grotesk',monospace;font-size:7px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted-2)}
+.cart-form input{padding:9px 11px;border:1px solid var(--line-dark);background:transparent;font:inherit;font-size:12px;transition:border-color var(--dur)}
+.cart-form input:focus{outline:none;border-color:var(--ink)}
+.cart-form__actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.btn-primary{background:var(--ink);color:var(--paper);padding:11px 22px;font-family:'Space Grotesk',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;transition:opacity var(--dur)}
+.btn-primary:hover{opacity:.75}
+.btn-secondary{border:1px solid var(--line-dark);padding:11px 22px;font-family:'Space Grotesk',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;transition:background var(--dur),color var(--dur)}
+.btn-secondary:hover{background:var(--ink);color:var(--paper)}
+.cart-result{margin-top:16px;padding:14px;border:1px dashed var(--line-dark);background:rgba(0,0,0,.02);font-family:'Space Grotesk',monospace;font-size:11px;line-height:1.5;white-space:pre-wrap;display:none}
+.cart-result.is-visible{display:block}
+.cart-result__hint{font-family:'Space Grotesk',monospace;font-size:7px;letter-spacing:.08em;color:var(--muted-2);text-transform:uppercase;margin-top:8px;display:block}
+.cart-empty{text-align:center;padding:24px 0;font-family:'Space Grotesk',monospace;font-size:9px;letter-spacing:.08em;color:var(--muted-2);text-transform:uppercase}
+
+.support-content{max-width:400px;text-align:center;padding:32px 24px}
+.support-title{font-family:'Anton',sans-serif;font-size:24px;text-transform:uppercase;margin-bottom:8px}
+.support-desc{font-size:12px;color:var(--muted-2);margin-bottom:20px}
+.support-links{display:flex;flex-direction:column;gap:10px}
+.support-link{display:block;background:var(--ink);color:var(--paper);padding:14px;font-family:'Space Grotesk',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;transition:opacity var(--dur)}
+.support-link:hover{opacity:.8}
+
+/* FAB */
+.fab-container{position:fixed;bottom:24px;right:24px;z-index:9600;display:flex;flex-direction:column;gap:12px}
+.fab-btn{width:56px;height:56px;border-radius:50%;background:var(--ink);color:var(--paper);display:grid;place-items:center;box-shadow:0 8px 24px rgba(0,0,0,.25);transition:transform .3s var(--ease-out),background .3s;position:relative}
+.fab-btn:hover{transform:scale(1.1);background:var(--muted)}
+.fab-btn svg{width:24px;height:24px}
+.fab-btn .fab-badge{position:absolute;top:-4px;right:-4px;min-width:20px;height:20px;background:var(--red);border-radius:999px;font-family:'Space Grotesk',monospace;font-size:10px;font-weight:700;display:grid;place-items:center;padding:0 5px;color:#fff;border:2px solid var(--paper)}
+</style>
+</head>
+<body class="is-loading">
+
+<div class="reading-progress" id="readingProgress"></div>
+<div class="cursor" id="cursor"></div>
+<div class="cursor-follower" id="cursorFollower"></div>
+<canvas id="particles"></canvas>
+
+<div class="preloader" id="preloader" aria-hidden="true">
+  <div class="preloader__grid"></div>
+  <div class="preloader__inner">
+    <div class="preloader__logo">MONO</div>
+    <div class="preloader__sub meta">Техническая одежда — с 2026</div>
+    <div class="preloader__counter"><span id="preCounter">000</span> / 100</div>
+  </div>
+</div>
+
+<!-- ШАПКА -->
+<header class="header" id="siteHeader">
+  <div class="wrap header__inner">
+    <a href="#" class="header__logo" id="siteLogo">MONO<span style="color:var(--red)">.</span></a>
+    
+    <nav class="header__nav" aria-label="Основная навигация">
+      <a href="#products">Коллекция</a>
+      <a href="#showcase">3D</a>
+      <a href="#why">Почему мы</a>
+      <a href="#principles">Принципы</a>
+      <a href="#contacts">Контакты</a>
+    </nav>
+    
+    <div class="header__right">
+      <button class="header__cart" id="cartBtn" aria-label="Корзина">
+        <span>Корзина</span>
+        <span class="cart-count" id="cartCount">0</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="hero" id="top">
+    <div class="hero__media" id="heroMedia">
+      <div class="hero__fallback" data-parallax="0.1"></div>
+      <div class="hero__grid-overlay" data-parallax="0.05"></div>
+    </div>
+    
+    <div class="wrap hero__content">
+      <div class="hero__layout">
+        
+        <div class="hero__left">
+          <div class="hero__eyebrow reveal">
+            <span class="dot"></span>
+            <span class="meta" id="heroEyebrow">Дроп 01 — Технический минимум</span>
+          </div>
+          <h1 class="hero__title display" id="heroTitle">
+            <span class="line"><span class="line-inner">ФОРМА</span></span>
+            <span class="line"><span class="line-inner">СЛЕДУЕТ</span></span>
+            <span class="line"><em><span class="line-inner">ФУНКЦИИ</span></em></span>
+          </h1>
+          <div class="hero__bottom reveal">
+            <p class="hero__desc" id="heroDesc">Чёрное. Белое. Ничего лишнего. Одежда как инструмент — без декора, без компромиссов.</p>
+            <a href="#products" class="hero__cta magnetic"><span>Смотреть коллекцию</span> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+          </div>
+        </div>
+
+        <div class="hero__right reveal">
+          <div class="hero__object" id="heroObjectViewer">
+            <div class="hero__object-loader" id="heroObjectLoader">Загрузка объекта…</div>
+            <div class="hero__object-caption meta">Потяни, чтобы рассмотреть</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <div class="scroll-hint">Вниз</div>
+  </section>
+
+  <div class="marquee" aria-hidden="true">
+    <div class="marquee__track">
+      <span>Форма следует функции</span><span>Только монохром</span><span>Малые партии</span><span>Без декора</span>
+      <span>Форма следует функции</span><span>Только монохром</span><span>Малые партии</span><span>Без декора</span>
+    </div>
+  </div>
+
+  <section class="section" id="products">
+    <div class="wrap">
+      <div class="section__head reveal">
+        <div><div class="section__index">01 / Коллекция</div><h2 class="h2">ДРОП 01</h2></div>
+        <span class="meta" style="color:var(--muted-2)">4 позиции</span>
+      </div>
+      <div class="products reveal" id="productGrid"></div>
+    </div>
+  </section>
+
+  <section class="section" id="showcase" style="background:#0A0A0A;color:var(--paper);border-top:none">
+    <div class="wrap">
+      <div class="section__head reveal">
+        <div><div class="section__index" style="color:rgba(255,255,255,.4)">02 / Изучение объекта</div><h2 class="h2">ПОТРОГАЙ<br>ОБЪЕКТ</h2></div>
+        <span class="meta" style="color:rgba(255,255,255,.4)">Тяни · Скролль</span>
+      </div>
+      <div class="showcase reveal">
+        <div class="viewer" id="viewerShoe">
+          <div class="viewer__label">Объект 01 — Кроссовок</div>
+          <button class="viewer__recenter" data-recenter="shoe">Центр</button>
+          <div class="viewer__hint">Тяни для вращения · Скролль для зума</div>
+          <div class="viewer__loader" id="loaderShoe">Загрузка модели…</div>
+          <div class="viewer__fallback">3D недоступно — проверьте сеть / WebGL</div>
+        </div>
+        <div class="viewer" id="viewerHoodie">
+          <div class="viewer__label">Объект 02 — Худи</div>
+          <button class="viewer__recenter" data-recenter="hoodie">Центр</button>
+          <div class="viewer__hint">Тяни для вращения · Скролль для зума</div>
+          <div class="viewer__loader" id="loaderHoodie">Загрузка модели…</div>
+          <div class="viewer__fallback">3D недоступно — проверьте сеть / WebGL</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="layers">
+    <div class="wrap">
+      <div class="section__head reveal">
+        <div><div class="section__index">03 / Полевые заметки</div><h2 class="h2">СОЗДАНО ДЛЯ<br>ИСПОЛЬЗОВАНИЯ</h2></div>
+        <span class="meta" style="color:var(--muted-2)">Перемешивание · Наведи для цвета</span>
+      </div>
+      <div class="layers reveal" id="layersStack">
+        <figure class="layer layer--1" data-layer>
+          <img src="https://images.unsplash.com/photo-1523398002811-999ca8dec234?w=800&q=80&auto=format&fit=crop" alt="Техническая ткань крупным планом" loading="lazy">
+          <figcaption>01 — Ткань верха / 3L мембрана</figcaption>
+        </figure>
+        <figure class="layer layer--2" data-layer>
+          <img src="https://images.unsplash.com/photo-1551028719-00167b16eac5?w=800&q=80&auto=format&fit=crop" alt="Конструкция шва" loading="lazy">
+          <figcaption>02 — Конструкция шва / Закрепка</figcaption>
+        </figure>
+        <figure class="layer layer--3" data-layer>
+          <img src="https://images.unsplash.com/photo-1549298916-b41d501d3772?w=800&q=80&auto=format&fit=crop" alt="Кроссовок в профиль" loading="lazy">
+          <figcaption>03 — Кроссовок / Вулканизированная подошва</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="why">
+    <div class="wrap">
+      <div class="section__head reveal">
+        <div><div class="section__index">04 / Почему MONO</div><h2 class="h2">ПОЧЕМУ МЫ</h2></div>
+      </div>
+      <div class="why-grid reveal">
+        <div class="why-card"><div class="why-card__num">01</div><h3 class="why-card__title">Материал<br>решает</h3><p class="why-card__text">Мы не печатаем логотипы на дешёвом хлопке. Ткань — это конструкция. Если материал не выдерживает — вещь не выходит.</p></div>
+        <div class="why-card"><div class="why-card__num">02</div><h3 class="why-card__title">Ноль<br>декора</h3><p class="why-card__text">Никаких наклеек, страз и «дизайнерских» швов ради швов. Каждая деталь имеет функцию или её нет.</p></div>
+        <div class="why-card"><div class="why-card__num">03</div><h3 class="why-card__title">Малые<br>тиражи</h3><p class="why-card__text">Одна фабрика, один подрядчик, ограниченный выпуск. Мы знаем, кто шьёт каждую вещь, и платим честно.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="principles">
+    <div class="wrap">
+      <div class="section__head reveal">
+        <div><div class="section__index">05 / Принципы</div><h2 class="h2">ПРИНЦИПЫ</h2></div>
+      </div>
+      <div class="principles reveal">
+        <div class="principle"><span class="principle__n">П.01</span><div><h3 class="principle__title">Функция первична</h3><p class="principle__text">Любая деталь проходит тест: «что она делает?» Если ответа нет — деталь удаляется.</p></div></div>
+        <div class="principle"><span class="principle__n">П.02</span><div><h3 class="principle__title">Монохром как дисциплина</h3><p class="principle__text">Цвет — это отвлечение. Чёрное и белое заставляют смотреть на форму и материал.</p></div></div>
+        <div class="principle"><span class="principle__n">П.03</span><div><h3 class="principle__title">Прозрачность</h3><p class="principle__text">Состав, страна производства, уход — на каждой вещи. Без мелкого шрифта.</p></div></div>
+        <div class="principle"><span class="principle__n">П.04</span><div><h3 class="principle__title">Ремонт, не замена</h3><p class="principle__text">Мы чиним свои вещи. Приносите — вернём в строй, если это возможно физически.</p></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="contacts" id="contacts">
+    <div class="wrap">
+      <div class="section__head reveal">
+        <div><div class="section__index">06 / Контакты</div><h2 class="h2">КОНТАКТЫ</h2></div>
+      </div>
+      <div class="contacts__grid reveal">
+        <div class="contacts__map">
+          <iframe src="https://api-maps.yandex.ru/frame/v1/-/CVh7YBYg?lang=ru_RU" title="Яндекс Карта — Смоленск, Гагарина 1" loading="lazy" allowfullscreen></iframe>
+        </div>
+        <div class="contacts__info">
+          <div class="contact-line"><span class="meta">ВКонтакте</span><strong><a href="https://vk.me/desktopcoder" target="_blank" rel="noopener">vk.me/desktopcoder ↗</a></strong></div>
+          <div class="contact-line"><span class="meta">Telegram</span><strong><a href="https://t.me/desktopcoder" target="_blank" rel="noopener">t.me/desktopcoder ↗</a></strong></div>
+          <div class="contact-line"><span class="meta">Адрес</span><strong>Смоленск,<br>ул. Гагарина, 1</strong></div>
+          <div class="contact-line"><span class="meta">Время работы</span><strong>Пн–Сб / 11:00–20:00</strong></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer__top">
+      <div>
+        <div class="footer__brand" id="footerBrand">MONO<span style="color:var(--red)">.</span></div>
+        <p class="footer__tagline" id="footerTagline">Техническая одежда. Только монохром.</p>
+      </div>
+      <div class="footer__col"><span class="meta">Магазин</span><a href="#products">Коллекция</a><a href="#showcase">3D-объект</a><a href="#layers">Заметки</a></div>
+      <div class="footer__col"><span class="meta">Информация</span><a href="#why">Почему мы</a><a href="#principles">Принципы</a><a href="#contacts">Контакты</a></div>
+      <div class="footer__col"><span class="meta">Соцсети</span><a href="https://vk.me/desktopcoder" target="_blank" rel="noopener">ВКонтакте ↗</a><a href="https://t.me/desktopcoder" target="_blank" rel="noopener">Telegram ↗</a><a href="#admin" class="admin-trigger">CRM / Настройки</a></div>
+    </div>
+    <div class="footer__ghost" aria-hidden="true">MONO</div>
+    <div class="footer__bottom">
+      <span>© 2026 MONO Object Apparel</span>
+      <span id="footerLegal">Смоленск · Гагарина 1 · Без нейрослопа</span>
+    </div>
+  </div>
+</footer>
+
+<!-- FAB КНОПКИ -->
+<div class="fab-container">
+  <button class="fab-btn" id="fabSupport" aria-label="Поддержка">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+  </button>
+  <button class="fab-btn" id="fabCart" aria-label="Корзина">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+    <span class="fab-badge" id="fabCartCount">0</span>
+  </button>
+</div>
+
+<!-- МОДАЛКА ПОДДЕРЖКИ -->
+<div class="modal-overlay" id="supportModal">
+  <div class="modal-backdrop" id="supportOverlay"></div>
+  <div class="modal-content support-content">
+    <div class="modal-title">Поддержка</div>
+    <p class="support-desc">Возникли вопросы? Напишите нам в удобной соцсети.</p>
+    <div class="support-links">
+      <a href="https://t.me/desktopcoder" target="_blank" rel="noopener" class="support-link">Telegram</a>
+      <a href="https://vk.me/desktopcoder" target="_blank" rel="noopener" class="support-link">ВКонтакте</a>
+    </div>
+    <button class="btn-secondary" style="margin-top:20px;width:100%" id="supportClose">Закрыть</button>
+  </div>
+</div>
+
+<!-- АДМИН-ПАНЕЛЬ -->
+<div class="admin" id="admin" role="dialog" aria-modal="true" aria-label="Админ-панель">
+  <div class="admin__bar">
+    <div class="wrap admin__bar-inner">
+      <div class="admin__brand">MONO / Админ</div>
+      <div class="admin__tabs">
+        <button class="admin__tab is-active" data-tab="content">Контент</button>
+        <button class="admin__tab" data-tab="notifications">Уведомления</button>
+        <button class="admin__tab" data-tab="traffic">CRM — Трафик</button>
+        <button class="admin__tab" data-tab="orders">CRM — Заказы</button>
+        <button class="admin__tab" data-tab="leads">CRM — Заявки</button>
+      </div>
+      <button class="admin__close" id="adminClose">Закрыть ✕</button>
+    </div>
+  </div>
+  <div class="admin__body">
+    <div class="wrap">
+      <div class="admin-panel is-active" id="panel-content">
+        <div class="admin-actions">
+            <button class="btn-dark" id="clearAllData" style="background:var(--red);color:#fff">Сбросить все данные</button>
+        </div>
+        <form class="admin-form" id="contentForm">
+          <div class="field"><label for="cHeroEyebrow">Hero — надзаголовок</label><input id="cHeroEyebrow" name="heroEyebrow" type="text" placeholder="Дроп 01 — Технический минимум"></div>
+          <div class="field"><label for="cHeroTitle">Hero — заголовок (HTML: &lt;br&gt;, &lt;em&gt;)</label><textarea id="cHeroTitle" name="heroTitle" placeholder="ФОРМА<br>СЛЕДУЕТ<br><em>ФУНКЦИИ</em>"></textarea></div>
+          <div class="field"><label for="cHeroDesc">Hero — описание</label><textarea id="cHeroDesc" name="heroDesc" placeholder="Чёрное. Белое. Ничего лишнего."></textarea></div>
+          <div class="field"><label for="cVideoUrl">Hero — URL видео-фона (MP4, опционально)</label><input id="cVideoUrl" name="videoUrl" type="url" placeholder="https://…/video.mp4"></div>
+          <div class="field"><label for="cLogo">Логотип (текст)</label><input id="cLogo" name="logo" type="text" placeholder="MONO"></div>
+          <div class="field"><label for="cFooterTagline">Подвал — подпись бренда</label><input id="cFooterTagline" name="footerTagline" type="text" placeholder="Техническая одежда."></div>
+          <div class="field"><label for="cFooterLegal">Подвал — нижняя строка</label><input id="cFooterLegal" name="footerLegal" type="text" placeholder="Смоленск · Гагарина 1"></div>
+          <button type="submit" class="btn-dark">Сохранить контент</button>
+          <p class="meta" id="contentSaved" style="color:var(--red);display:none">Сохранено</p>
+        </form>
+      </div>
+
+      <div class="admin-panel" id="panel-notifications">
+        <h3 class="h2" style="font-size:18px;margin-bottom:14px">Режим уведомлений</h3>
+        <div class="kpi-grid" style="grid-template-columns:1fr 1fr;margin-bottom:18px">
+          <div class="kpi">
+            <div class="kpi__label">Выберите способ</div>
+            <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px;font-size:12px">
+              <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
+                <input type="radio" name="notifyMode" value="client" checked> Клиент отправляет вручную
+              </label>
+              <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
+                <input type="radio" name="notifyMode" value="bot"> Бот отправляет автоматически
+              </label>
+            </div>
+          </div>
+          <div class="kpi" style="display:flex;flex-direction:column;justify-content:center">
+            <p class="meta" style="color:var(--muted-2);line-height:1.5">
+              «Клиент» — после оформления заказа показываются ссылки на Telegram/VK, текст копируется в буфер.
+              «Бот» — сайт сам отправляет уведомление через API (требуются токены).
+            </p>
+          </div>
+        </div>
+
+        <div id="botSettings" style="display:none;max-width:560px">
+          <h4 class="h2" style="font-size:14px;margin-bottom:10px">Telegram</h4>
+          <div class="field"><label>Bot Token</label><input id="tgBotToken" type="text" placeholder="123456789:ABCdef..."></div>
+          <div class="field"><label>Chat ID получателя</label><input id="tgChatId" type="text" placeholder="123456789"></div>
+
+          <h4 class="h2" style="font-size:14px;margin:18px 0 10px">VK</h4>
+          <div class="field"><label>Access Token сообщества</label><input id="vkToken" type="text" placeholder="vk1.a..."></div>
+          <div class="field"><label>Peer ID получателя</label><input id="vkPeerId" type="text" placeholder="123456789"></div>
+
+          <button class="btn-dark" id="saveNotifySettings" style="margin-top:14px">Сохранить настройки</button>
+          <p class="meta" id="notifySaved" style="color:var(--red);display:none;margin-top:8px">Сохранено</p>
+          <p class="meta" style="color:var(--muted-2);margin-top:10px;line-height:1.4">
+            ⚠️ Токены хранятся в localStorage браузера. Для продакшена используйте серверless-прокси.
+          </p>
+        </div>
+      </div>
+
+      <div class="admin-panel" id="panel-traffic">
+        <div class="kpi-grid">
+          <div class="kpi"><div class="kpi__label">Просмотры товаров</div><div class="kpi__value" id="kpiViews">0</div><div class="kpi__sub">Клики по карточкам</div></div>
+          <div class="kpi"><div class="kpi__label">В корзину</div><div class="kpi__value" id="kpiCarts">0</div><div class="kpi__sub">Добавления</div></div>
+          <div class="kpi"><div class="kpi__label">Оформленные заказы</div><div class="kpi__value" id="kpiCreatedOrders">0</div><div class="kpi__sub">Отправки форм</div></div>
+          <div class="kpi"><div class="kpi__label">Конверсия</div><div class="kpi__value" id="kpiConv">0%</div><div class="kpi__sub">Заказы / Просмотры</div></div>
+        </div>
+        <h3 class="h2" style="font-size:20px;margin-bottom:10px">События</h3>
+        <table class="admin-table"><thead><tr><th>Время</th><th>Тип</th><th>Объект</th></tr></thead><tbody id="trafficLog"><tr><td colspan="3" class="admin-empty">Пока нет событий.</td></tr></tbody></table>
+      </div>
+
+      <div class="admin-panel" id="panel-orders">
+        <div class="kpi-grid">
+          <div class="kpi"><div class="kpi__label">Всего заказов</div><div class="kpi__value" id="kpiOrders">0</div><div class="kpi__sub">Создано</div></div>
+          <div class="kpi"><div class="kpi__label">Выручка (подтв.)</div><div class="kpi__value" id="kpiRevenue" style="font-size:clamp(20px,2.8vw,32px)">0 ₽</div><div class="kpi__sub">Только подтвержденные</div></div>
+          <div class="kpi"><div class="kpi__label">Средний чек</div><div class="kpi__value" id="kpiAvg" style="font-size:clamp(20px,2.8vw,32px)">0 ₽</div><div class="kpi__sub">Подтв. выручка / Заказы</div></div>
+          <div class="kpi"><div class="kpi__label">В обработке</div><div class="kpi__value" id="kpiPending">0</div><div class="kpi__sub">Ожидают подтв.</div></div>
+        </div>
+        <table class="admin-table"><thead><tr><th>#</th><th>Клиент</th><th>Товар</th><th>Сумма</th><th>Статус</th><th>Дата</th><th>Действие</th></tr></thead><tbody id="ordersTable"><tr><td colspan="7" class="admin-empty">Заказов пока нет.</td></tr></tbody></table>
+      </div>
+
+      <div class="admin-panel" id="panel-leads">
+        <div class="kpi-grid">
+          <div class="kpi"><div class="kpi__label">Заявки</div><div class="kpi__value" id="kpiLeadsTotal">0</div><div class="kpi__sub">Всего</div></div>
+          <div class="kpi"><div class="kpi__label">Новые</div><div class="kpi__value" id="kpiLeadsNew">0</div><div class="kpi__sub">Ожидают</div></div>
+        </div>
+        <table class="admin-table"><thead><tr><th>Имя</th><th>Контакт</th><th>Сообщение</th><th>Статус</th><th>Дата</th><th></th></tr></thead><tbody id="leadsTable"><tr><td colspan="6" class="admin-empty">Заявок пока нет.</td></tr></tbody></table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- КОРЗИНА -->
+<div class="modal-overlay" id="cartModal">
+  <div class="modal-backdrop" id="cartOverlay"></div>
+  <div class="modal-content">
+    <div class="modal-head">
+      <div class="modal-title">Корзина</div>
+      <button class="modal-close" id="cartClose">Закрыть ✕</button>
+    </div>
+    <div class="cart-list" id="cartList"></div>
+    <div class="cart-total">
+      <span class="cart-total__label">Итого</span>
+      <span class="cart-total__value" id="cartTotal">0 ₽</span>
+    </div>
+    <form class="cart-form" id="cartForm">
+      <div class="field"><label for="cartName">Имя</label><input id="cartName" name="name" type="text" required placeholder="Иван"></div>
+      <div class="field"><label for="cartSurname">Фамилия</label><input id="cartSurname" name="surname" type="text" required placeholder="Иванов"></div>
+      <div class="field"><label for="cartContact">Контакт (Telegram / VK / телефон)</label><input id="cartContact" name="contact" type="text" required placeholder="@username или +7…"></div>
+      <div class="cart-form__actions">
+        <button type="submit" class="btn-primary">Сформировать заказ</button>
+        <button type="button" class="btn-secondary" id="cartClear">Очистить</button>
+      </div>
+    </form>
+    <div class="cart-result" id="cartResult"></div>
+    <div class="cart-form__actions" id="cartSendActions" style="display:none">
+      <a href="#" class="btn-secondary" id="sendTg" target="_blank" rel="noopener">Отправить в Telegram</a>
+      <a href="#" class="btn-secondary" id="sendVk" target="_blank" rel="noopener">Отправить ВКонтакте</a>
+    </div>
+    <span class="cart-result__hint" id="cartHint" style="display:none">Скопируйте текст и отправьте его в удобной соцсети. Ответ придёт от администратора.</span>
+  </div>
+</div>
+
+<!-- GSAP + ScrollTrigger + Three.js -->
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/Flip.min.js"></script>
+<script type="importmap">
+{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js", "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/" } }
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+
+gsap.registerPlugin(ScrollTrigger, Flip);
+
+/* ============================================================
+   ЛОКАЛЬНОЕ ХРАНИЛИЩЕ
+   ============================================================ */
+const LS = {
+  get(k,fb){ try{ const v=localStorage.getItem(k); return v?JSON.parse(v):fb }catch(e){ return fb } },
+  set(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)) }catch(e){ console.warn('localStorage недоступен',e) } }
+};
+const KEY_A='mono_analytics_v2', KEY_O='mono_orders_v2', KEY_C='mono_config_v2', KEY_L='mono_leads_v2', KEY_CART='mono_cart_v2';
+const NOTIFY_KEY='mono_notify_settings_v1';
+
+let analytics = LS.get(KEY_A, { views: 0, carts: 0, orders: 0, events: [] });
+
+function logEvent(type, label) {
+  if (type === 'view') analytics.views++;
+  if (type === 'cart') analytics.carts++;
+  if (type === 'order') analytics.orders++;
+  analytics.events.unshift({ t: new Date().toISOString(), type, label });
+  analytics.events = analytics.events.slice(0, 80);
+  LS.set(KEY_A, analytics);
+  renderCRM();
+}
+
+function updateCartBadge(){
+  const cart = LS.get(KEY_CART, []);
+  const totalQty = cart.reduce((s,i)=>s+i.qty,0);
+  const el = document.getElementById('cartCount');
+  const fabEl = document.getElementById('fabCartCount');
+  if(el) el.textContent = totalQty;
+  if(fabEl) fabEl.textContent = totalQty;
+}
+
+const PRODUCTS = [
+  { id:'zip-shell', name:'Зип-куртка', meta:'3L мембрана / Чёрный', price:18900, tag:'Новинка', img:'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=700&q=80&auto=format&fit=crop' },
+  { id:'trainer-low', name:'Кроссовки', meta:'Вулканизированные / Белые', price:12400, tag:'База', img:'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=700&q=80&auto=format&fit=crop' },
+  { id:'cargo-pant', name:'Карго', meta:'Рипстоп / Чёрный', price:9800, tag:'', img:'https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=700&q=80&auto=format&fit=crop' },
+  { id:'beanie', name:'Шапка', meta:'Меринос / Чёрный', price:3900, tag:'', img:'https://images.unsplash.com/photo-1576871337622-98d48d1cf531?w=700&q=80&auto=format&fit=crop' }
+];
+
+/* ============================================================
+   КАСТОМНЫЙ КУРСОР + МАГНИТНЫЕ КНОПКИ
+   ============================================================ */
+const cursor = document.getElementById('cursor');
+const follower = document.getElementById('cursorFollower');
+let mx = 0, my = 0, fx = 0, fy = 0;
+
+document.addEventListener('mousemove', e => {
+  mx = e.clientX; my = e.clientY;
+  gsap.to(cursor, { x: mx, y: my, duration: 0.1, ease: 'power2.out' });
+});
+function animateFollower() {
+  fx += (mx - fx) * 0.15;
+  fy += (my - fy) * 0.15;
+  follower.style.transform = `translate(${fx}px, ${fy}px) translate(-50%,-50%)`;
+  requestAnimationFrame(animateFollower);
+}
+animateFollower();
+
+document.querySelectorAll('a, button, .product, .layer, .viewer__recenter').forEach(el => {
+  el.addEventListener('mouseenter', () => cursor.classList.add('is-hover'));
+  el.addEventListener('mouseleave', () => cursor.classList.remove('is-hover'));
+});
+
+document.querySelectorAll('.magnetic').forEach(btn => {
+  btn.addEventListener('mousemove', e => {
+    const rect = btn.getBoundingClientRect();
+    const x = e.clientX - rect.left - rect.width / 2;
+    const y = e.clientY - rect.top - rect.height / 2;
+    gsap.to(btn, { x: x * 0.2, y: y * 0.2, duration: 0.4, ease: 'power2.out' });
+  });
+  btn.addEventListener('mouseleave', () => {
+    gsap.to(btn, { x: 0, y: 0, duration: 0.4, ease: 'power2.out' });
+  });
+});
+
+/* ============================================================
+   ЧАСТИЦЫ
+   ============================================================ */
+const canvas = document.getElementById('particles');
+const ctx = canvas.getContext('2d');
+let particles = [];
+let w, h;
+
+function resizeCanvas() {
+  w = canvas.width = window.innerWidth;
+  h = canvas.height = window.innerHeight;
+}
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
+
+class Particle {
+  constructor() {
+    this.x = Math.random() * w;
+    this.y = Math.random() * h;
+    this.vx = (Math.random() - 0.5) * 0.35;
+    this.vy = (Math.random() - 0.5) * 0.35;
+    this.size = Math.random() * 1.4 + 0.4;
+    this.opacity = Math.random() * 0.4 + 0.15;
+  }
+  update() {
+    this.x += this.vx;
+    this.y += this.vy;
+    if (this.x < 0 || this.x > w) this.vx *= -1;
+    if (this.y < 0 || this.y > h) this.vy *= -1;
+    const dx = mx - this.x;
+    const dy = my - this.y;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    if (dist < 140) { this.x -= dx * 0.015; this.y -= dy * 0.015; }
+  }
+  draw() {
+    const isDark = window.scrollY > window.innerHeight * 2;
+    const color = isDark ? `rgba(255,255,255,${this.opacity})` : `rgba(10,10,10,${this.opacity})`;
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+    ctx.fill();
+  }
+}
+for (let i = 0; i < 70; i++) particles.push(new Particle());
+
+function animateParticles() {
+  ctx.clearRect(0, 0, w, h);
+  particles.forEach(p => { p.update(); p.draw(); });
+  requestAnimationFrame(animateParticles);
+}
+animateParticles();
+
+/* ============================================================
+   КОНФИГ
+   ============================================================ */
+function applyConfig(){
+  const c = LS.get(KEY_C,null); if(!c) return;
+  if(c.heroEyebrow) document.getElementById('heroEyebrow').textContent = c.heroEyebrow;
+  if(c.heroTitle) document.getElementById('heroTitle').innerHTML = c.heroTitle;
+  if(c.heroDesc) document.getElementById('heroDesc').textContent = c.heroDesc;
+  if(c.logo) document.getElementById('siteLogo').innerHTML = c.logo+'<span style="color:var(--red)">.</span>';
+  if(c.footerTagline) document.getElementById('footerTagline').textContent = c.footerTagline;
+  if(c.footerLegal) document.getElementById('footerLegal').textContent = c.footerLegal;
+  if(c.videoUrl){
+    const media = document.getElementById('heroMedia');
+    media.innerHTML = '<video autoplay muted loop playsinline><source src="'+c.videoUrl+'" type="video/mp4"></video><div class="hero__grid-overlay"></div>';
+  }
+}
+
+/* ============================================================
+   ТОВАРЫ + ЛОГИКА ТРАФИКА
+   ============================================================ */
+const grid = document.getElementById('productGrid');
+PRODUCTS.forEach(p=>{
+  const card = document.createElement('article'); card.className='product';
+  card.innerHTML = `
+    <div class="product__media">${p.tag?`<span class="product__tag">${p.tag}</span>`:''}<img src="${p.img}" alt="${p.name}" loading="lazy"></div>
+    <div class="product__info"><div><div class="product__name">${p.name}</div><div class="product__meta">${p.meta}</div></div><div class="product__price">${p.price.toLocaleString('ru-RU')} ₽</div></div>
+    <div class="product__actions"><button class="btn-add" data-id="${p.id}">В корзину</button></div>`;
+  grid.appendChild(card);
+
+  card.addEventListener('click', (e) => {
+    if (e.target.closest('.btn-add')) return;
+    logEvent('view', p.name);
+  });
+
+  card.addEventListener('mousemove', e => {
+    const rect = card.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width - 0.5;
+    const y = (e.clientY - rect.top) / rect.height - 0.5;
+    card.style.transform = `rotateY(${x * 8}deg) rotateX(${-y * 8}deg) translateZ(10px)`;
+    card.querySelector('.product__media').style.transform = `translateZ(40px)`;
+  });
+  card.addEventListener('mouseleave', () => {
+    card.style.transform = 'rotateY(0) rotateX(0) translateZ(0)';
+    card.querySelector('.product__media').style.transform = 'translateZ(30px)';
+  });
+});
+
+grid.addEventListener('click',e=>{
+  const btn=e.target.closest('.btn-add'); if(!btn) return;
+  const p=PRODUCTS.find(x=>x.id===btn.dataset.id); if(!p) return;
+  addToCart(p);
+  btn.textContent='Добавлено'; btn.classList.add('is-added');
+  setTimeout(()=>{ btn.textContent='В корзину'; btn.classList.remove('is-added'); },1200);
+});
+
+/* ============================================================
+   3D-МОДЕЛИ (КАТАЛОГ)
+   ============================================================ */
+const MODEL_URLS = {
+  shoe: 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Assets/main/Models/MaterialsVariantsShoe/glTF-Binary/MaterialsVariantsShoe.glb',
+  hoodie: 'https://raw.githubusercontent.com/pmndrs/drei-assets/master/gltf/hoodie.glb'
+};
+
+function initViewer(containerId, modelUrl, loaderId, type){
+  const container = document.getElementById(containerId);
+  const loaderEl = document.getElementById(loaderId);
+  if(!window.WebGLRenderingContext){ container.querySelector('.viewer__fallback').style.display='grid'; if(loaderEl) loaderEl.classList.add('is-hidden'); return; }
+
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x111111);
+
+  const camera = new THREE.PerspectiveCamera(36,1,0.01,100);
+  const renderer = new THREE.WebGLRenderer({ antialias:true, alpha:false, powerPreference:'high-performance' });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+  renderer.setSize(container.clientWidth, container.clientHeight);
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.2;
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+  container.appendChild(renderer.domElement);
+
+  const pmrem = new THREE.PMREMGenerator(renderer);
+  scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+
+  scene.add(new THREE.AmbientLight(0xffffff,0.6));
+  const key = new THREE.DirectionalLight(0xffffff,3); key.position.set(3,4,3); scene.add(key);
+  const rim = new THREE.DirectionalLight(0xffffff,1.5); rim.position.set(-3,1,-2); scene.add(rim);
+  const fill = new THREE.DirectionalLight(0xffffff,1); fill.position.set(0,-2,2); scene.add(fill);
+
+  let controls = new OrbitControls(camera,renderer.domElement);
+  controls.enableDamping=true; controls.dampingFactor=.08; controls.autoRotate=true; controls.autoRotateSpeed=.7;
+  controls.enablePan=false; controls.minDistance=1.2; controls.maxDistance=6;
+  controls.maxPolarAngle=Math.PI/2+0.15; controls.minPolarAngle=0.2;
+
+  const home = { pos:new THREE.Vector3(0,0.5,2.8), target:new THREE.Vector3(0,0,0) };
+  camera.position.copy(home.pos);
+
+  container.querySelector('[data-recenter]')?.addEventListener('click',()=>{
+    gsap.to(camera.position,{x:home.pos.x,y:home.pos.y,z:home.pos.z,duration:.5,ease:'power3.out'});
+    controls.target.copy(home.target); controls.update();
+  });
+
+  new GLTFLoader().load(modelUrl, gltf=>{
+    const model = gltf.scene;
+    model.traverse(child => {
+      if (child.isMesh) {
+        child.material = child.material.clone();
+        if (type === 'shoe') {
+          child.material.color.setHex(0xffffff);
+          child.material.roughness = 0.5;
+        } else {
+          if (child.material.map) child.material.color.setHex(0xaaaaaa);
+          else child.material.color.setHex(0x888888);
+        }
+      }
+    });
+    const box = new THREE.Box3().setFromObject(model);
+    const size = box.getSize(new THREE.Vector3());
+    const center = box.getCenter(new THREE.Vector3());
+    const maxDim = Math.max(size.x,size.y,size.z);
+    const scale = 2.0 / maxDim;
+    model.scale.setScalar(scale);
+    model.position.sub(center.multiplyScalar(scale));
+    scene.add(model);
+    if(loaderEl) loaderEl.classList.add('is-hidden');
+  }, undefined, err=>{
+    console.warn('Ошибка загрузки модели',err);
+    container.querySelector('.viewer__fallback').style.display='grid';
+    if(loaderEl) loaderEl.classList.add('is-hidden');
+  });
+
+  function resize(){
+    const w=container.clientWidth,h=container.clientHeight;
+    if(!w||!h) return;
+    camera.aspect=w/h; camera.updateProjectionMatrix(); renderer.setSize(w,h);
+  }
+  new ResizeObserver(resize).observe(container);
+
+  let raf;
+  function tick(){ raf=requestAnimationFrame(tick); controls.update(); renderer.render(scene,camera); }
+  tick();
+  document.addEventListener('visibilitychange',()=>{
+    if(document.hidden) cancelAnimationFrame(raf);
+    else { cancelAnimationFrame(raf); tick(); }
+  });
+}
+initViewer('viewerShoe', MODEL_URLS.shoe, 'loaderShoe', 'shoe');
+initViewer('viewerHoodie', MODEL_URLS.hoodie, 'loaderHoodie', 'hoodie');
+
+/* ============================================================
+   3D-ФОТО В HERO (ИНТЕРАКТИВНЫЙ ОБЪЕКТ)
+   ============================================================ */
+const heroObjContainer = document.getElementById('heroObjectViewer');
+if (heroObjContainer) {
+  const loader = document.getElementById('heroObjectLoader');
+
+  const scene = new THREE.Scene();
+  // Убираем черный фон, делаем прозрачным
+  const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 100);
+  camera.position.set(0, 0, 4);
+
+  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setSize(heroObjContainer.clientWidth, heroObjContainer.clientHeight);
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.2;
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+  heroObjContainer.appendChild(renderer.domElement);
+
+  // Освещение (чтобы модель смотрелась на темном фоне)
+  scene.add(new THREE.AmbientLight(0xffffff, 1.5));
+  const key = new THREE.DirectionalLight(0xffffff, 2.5);
+  key.position.set(2, 3, 4); scene.add(key);
+  const rim = new THREE.DirectionalLight(0xffffff, 1.5);
+  rim.position.set(-2, -1, -2); scene.add(rim);
+
+  // Фото в стиле техно/стритвир (монохром)
+  const textureUrl = 'https://images.unsplash.com/photo-1617137968427-85924c800a22?w=1600&q=85&auto=format&fit=crop';
+  const loaderTex = new THREE.TextureLoader();
+  loaderTex.load(
+    textureUrl,
+    (tex) => {
+      tex.colorSpace = THREE.SRGBColorSpace;
+      const aspect = tex.image.width / tex.image.height;
+      
+      // Увеличиваем масштаб, чтобы объект занимал больше места
+      const height = 3.5;
+      const width = height * aspect;
+
+      const geo = new THREE.PlaneGeometry(width, height, 32, 32);
+      const mat = new THREE.MeshStandardMaterial({
+        map: tex,
+        roughness: 0.4,
+        metalness: 0.1,
+        side: THREE.DoubleSide,
+      });
+      const plane = new THREE.Mesh(geo, mat);
+      scene.add(plane);
+
+      if (loader) loader.classList.add('is-hidden');
+    },
+    undefined,
+    (err) => {
+      console.warn('Не удалось загрузить фото для 3D-объекта', err);
+      if (loader) loader.textContent = 'Фото недоступно';
+    }
+  );
+
+  const controls = new OrbitControls(camera, renderer.domElement);
+  controls.enableDamping = true;
+  controls.dampingFactor = 0.08;
+  controls.autoRotate = true;
+  controls.autoRotateSpeed = 1.5; // Ускорил вращение для эффекта
+  controls.enablePan = false;
+  controls.enableZoom = true;
+  controls.minDistance = 2;
+  controls.maxDistance = 8;
+  controls.maxPolarAngle = Math.PI / 2 + 0.4;
+  controls.minPolarAngle = 0.2;
+
+  function resizeHeroObject() {
+    const w = heroObjContainer.clientWidth;
+    const h = heroObjContainer.clientHeight;
+    if (!w || !h) return;
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+    renderer.setSize(w, h);
+  }
+  new ResizeObserver(resizeHeroObject).observe(heroObjContainer);
+  resizeHeroObject();
+
+  let rafHero;
+  function tickHero() {
+    rafHero = requestAnimationFrame(tickHero);
+    controls.update();
+    renderer.render(scene, camera);
+  }
+  tickHero();
+
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) cancelAnimationFrame(rafHero);
+    else { cancelAnimationFrame(rafHero); tickHero(); }
+  });
+}
+
+/* ============================================================
+   ПЕРЕМЕШИВАНИЕ КАРТОЧЕК
+   ============================================================ */
+const stack = document.getElementById('layersStack');
+if(stack && window.Flip){
+  const shuffle = () => {
+    const cards = gsap.utils.toArray('#layersStack [data-layer]');
+    if(cards.length < 2) return;
+    const state = Flip.getState(cards);
+    cards.push(cards.shift());
+    cards.forEach((c,i)=>stack.appendChild(c));
+    cards.forEach((c,i)=>c.className = 'layer layer--' + (i+1));
+    Flip.from(state,{duration:.9,ease:'power3.inOut',absolute:true,stagger:0.02});
+  };
+  setInterval(shuffle, 4800);
+}
+
+/* ============================================================
+   ПРЕЛОАДЕР + HERO
+   ============================================================ */
+const pre = document.getElementById('preloader');
+const counter = document.getElementById('preCounter');
+let n=0;
+const int = setInterval(()=>{ n=Math.min(100,n+Math.ceil(Math.random()*9)); counter.textContent=String(n).padStart(3,'0'); if(n>=100) clearInterval(int); },55);
+
+window.addEventListener('load',()=>{
+  setTimeout(()=>{
+    clearInterval(int); counter.textContent='100';
+    pre.classList.add('is-done');
+    document.body.classList.remove('is-loading');
+    gsap.utils.toArray('.hero__title .line-inner').forEach((line, i) => {
+      gsap.to(line, { y: '0%', duration: 1.0, ease: 'power4.out', delay: i * 0.1 });
+    });
+    gsap.from('.hero__eyebrow', { opacity: 0, y: 16, duration: 0.6, delay: 0.2 });
+    gsap.from('.hero__bottom', { opacity: 0, y: 20, duration: 0.6, delay: 0.5 });
+    setTimeout(()=>pre.style.display='none',900);
+  },1800);
+});
+
+/* ============================================================
+   SCROLL-АНИМАЦИИ
+   ============================================================ */
+window.addEventListener('scroll', () => {
+  const scrollTop = window.scrollY;
+  const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+  const progress = (scrollTop / docHeight) * 100;
+  document.getElementById('readingProgress').style.width = progress + '%';
+});
+
+const header = document.getElementById('siteHeader');
+window.addEventListener('scroll', () => {
+  if (window.scrollY > 50) header.classList.add('is-scrolled');
+  else header.classList.remove('is-scrolled');
+});
+
+gsap.utils.toArray('.reveal').forEach(el => {
+  gsap.fromTo(el,
+    { opacity: 0, y: 30 },
+    { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out',
+      scrollTrigger: { trigger: el, start: 'top 85%', toggleActions: 'play none none none' }
+    }
+  );
+});
+
+gsap.utils.toArray('.h2').forEach(title => {
+  const text = title.textContent;
+  title.textContent = '';
+  const chars = text.split('').map(char => {
+    const span = document.createElement('span');
+    span.textContent = char === ' ' ? '\u00A0' : char;
+    span.style.display = 'inline-block';
+    span.style.opacity = '0';
+    span.style.transform = 'translateY(40px) rotateX(-40deg)';
+    title.appendChild(span);
+    return span;
+  });
+  gsap.to(chars, {
+    opacity: 1, y: 0, rotateX: 0,
+    duration: 0.6, stagger: 0.02, ease: 'power3.out',
+    scrollTrigger: { trigger: title, start: 'top 85%' }
+  });
+});
+
+gsap.utils.toArray('[data-parallax]').forEach(el => {
+  const speed = parseFloat(el.dataset.parallax) || 0.1;
+  gsap.to(el, {
+    y: () => speed * 100 + '%',
+    ease: 'none',
+    scrollTrigger: { trigger: el.parentElement, start: 'top bottom', end: 'bottom top', scrub: true }
+  });
+});
+
+/* ============================================================
+   КОРЗИНА
+   ============================================================ */
+const cartModal = document.getElementById('cartModal');
+const cartListEl = document.getElementById('cartList');
+const cartTotalEl = document.getElementById('cartTotal');
+const cartResultEl = document.getElementById('cartResult');
+const cartForm = document.getElementById('cartForm');
+const cartSendActions = document.getElementById('cartSendActions');
+const cartHint = document.getElementById('cartHint');
+
+function getCart(){ return LS.get(KEY_CART, []); }
+function saveCart(cart){ LS.set(KEY_CART, cart); updateCartBadge(); renderCart(); }
+
+function addToCart(product){
+  const cart = getCart();
+  const existing = cart.find(i => i.id === product.id);
+  if(existing){ existing.qty += 1; }
+  else { cart.push({ ...product, qty: 1 }); }
+  saveCart(cart);
+  logEvent('cart', product.name);
+}
+
+function removeFromCart(id){
+  let cart = getCart();
+  cart = cart.filter(i => i.id !== id);
+  saveCart(cart);
+}
+
+function renderCart(){
+  const cart = getCart();
+  cartListEl.innerHTML = '';
+  if(cart.length === 0){
+    cartListEl.innerHTML = '<div class="cart-empty">Корзина пуста</div>';
+    cartTotalEl.textContent = '0 ₽';
+    cartResultEl.classList.remove('is-visible');
+    cartSendActions.style.display = 'none';
+    cartHint.style.display = 'none';
+    return;
+  }
+  let total = 0;
+  cart.forEach(item => {
+    total += item.price * item.qty;
+    const el = document.createElement('div');
+    el.className = 'cart-item';
+    el.innerHTML = `
+      <div class="cart-item__info">
+        <div class="cart-item__name">${item.name}</div>
+        <div class="cart-item__meta">${item.meta} · ${item.qty} шт.</div>
+      </div>
+      <div class="cart-item__price">${(item.price * item.qty).toLocaleString('ru-RU')} ₽</div>
+      <button class="cart-item__remove" data-id="${item.id}">Удалить</button>
+    `;
+    cartListEl.appendChild(el);
+  });
+  cartTotalEl.textContent = total.toLocaleString('ru-RU') + ' ₽';
+}
+
+cartListEl.addEventListener('click', e => {
+  const btn = e.target.closest('.cart-item__remove');
+  if(btn){ removeFromCart(btn.dataset.id); }
+});
+
+function openCart(){
+  cartModal.classList.add('is-open');
+  renderCart();
+  cartResultEl.classList.remove('is-visible');
+  cartSendActions.style.display = 'none';
+  cartHint.style.display = 'none';
+  document.body.style.overflow = 'hidden';
+}
+function closeCart(){
+  cartModal.classList.remove('is-open');
+  document.body.style.overflow = '';
+}
+
+document.getElementById('cartBtn').addEventListener('click', openCart);
+document.getElementById('fabCart').addEventListener('click', openCart);
+document.getElementById('cartClose').addEventListener('click', closeCart);
+document.getElementById('cartOverlay').addEventListener('click', closeCart);
+document.getElementById('cartClear').addEventListener('click', ()=>{
+  saveCart([]);
+  cartResultEl.classList.remove('is-visible');
+  cartSendActions.style.display = 'none';
+  cartHint.style.display = 'none';
+});
+
+cartForm.addEventListener('submit', async e => {
+  e.preventDefault();
+  const name = document.getElementById('cartName').value.trim();
+  const surname = document.getElementById('cartSurname').value.trim();
+  const contact = document.getElementById('cartContact').value.trim();
+  if(!name || !surname || !contact) return;
+  const cart = getCart();
+  if(cart.length === 0) return;
+
+  let total = 0;
+  const lines = cart.map(i => {
+    const sum = i.price * i.qty;
+    total += sum;
+    return `${i.name} (${i.meta}) — ${i.qty} шт. — ${sum.toLocaleString('ru-RU')} ₽`;
+  });
+
+  const orderText = `Здравствуйте! Новый заказ:\nИмя: ${name}\nФамилия: ${surname}\nКонтакт: ${contact}\n\nТовары:\n${lines.join('\n')}\n\nОбщая стоимость: ${total.toLocaleString('ru-RU')} ₽`;
+
+  // Создаём заказ в CRM
+  const orders = LS.get(KEY_O, []);
+  const newOrder = {
+    id: 'M-' + String(orders.length + 1).padStart(4, '0'),
+    product: cart.map(i => i.name).join(', '),
+    price: total,
+    status: 'processing',
+    date: new Date().toISOString(),
+    customer: `${name} ${surname}`,
+    contact
+  };
+  orders.unshift(newOrder);
+  LS.set(KEY_O, orders);
+  logEvent('order', `Заказ ${newOrder.id} от ${name}`);
+  saveCart([]);
+
+  const settings = getNotifySettings();
+
+  if (settings.mode === 'bot') {
+    cartResultEl.textContent = 'Отправка уведомления…';
+    cartResultEl.classList.add('is-visible');
+    const ok = await sendBotNotifications(orderText);
+    if (ok) {
+      cartResultEl.textContent = 'Заказ создан. Уведомление отправлено администратору.';
+      cartHint.textContent = 'Мы свяжемся с вами в ближайшее время.';
+    } else {
+      cartResultEl.textContent = 'Заказ создан, но уведомление не доставлено. Скопируйте текст и отправьте вручную.';
+      cartHint.textContent = 'Проверьте настройки бота в админ-панели или отправьте текст вручную.';
+      navigator.clipboard.writeText(orderText).catch(() => {});
+      const tgLink = document.getElementById('sendTg');
+      const vkLink = document.getElementById('sendVk');
+      tgLink.href = `https://t.me/desktopcoder?text=${encodeURIComponent(orderText)}`;
+      vkLink.href = `https://vk.me/desktopcoder?text=${encodeURIComponent(orderText)}`;
+      cartSendActions.style.display = 'flex';
+    }
+    cartHint.style.display = 'block';
+  } else {
+    cartResultEl.textContent = orderText;
+    cartResultEl.classList.add('is-visible');
+    cartHint.style.display = 'block';
+    navigator.clipboard.writeText(orderText).then(() => {
+      cartHint.textContent = 'Текст скопирован в буфер обмена. Выберите соцсеть для отправки.';
+    }).catch(() => {});
+    const tgLink = document.getElementById('sendTg');
+    const vkLink = document.getElementById('sendVk');
+    tgLink.href = `https://t.me/desktopcoder?text=${encodeURIComponent(orderText)}`;
+    vkLink.href = `https://vk.me/desktopcoder?text=${encodeURIComponent(orderText)}`;
+    cartSendActions.style.display = 'flex';
+  }
+});
+
+/* ============================================================
+   ПОДДЕРЖКА
+   ============================================================ */
+const supportModal = document.getElementById('supportModal');
+document.getElementById('fabSupport').addEventListener('click', () => {
+  supportModal.classList.add('is-open');
+  document.body.style.overflow = 'hidden';
+});
+document.getElementById('supportClose').addEventListener('click', () => {
+  supportModal.classList.remove('is-open');
+  document.body.style.overflow = '';
+});
+document.getElementById('supportOverlay').addEventListener('click', () => {
+  supportModal.classList.remove('is-open');
+  document.body.style.overflow = '';
+});
+
+/* ============================================================
+   НАСТРОЙКИ УВЕДОМЛЕНИЙ
+   ============================================================ */
+function getNotifySettings() {
+  return LS.get(NOTIFY_KEY, { mode: 'client', tgToken: '', tgChatId: '', vkToken: '', vkPeerId: '' });
+}
+function saveNotifySettings(settings) {
+  LS.set(NOTIFY_KEY, settings);
+}
+
+function loadNotifyPanel() {
+  const s = getNotifySettings();
+  document.querySelectorAll('input[name="notifyMode"]').forEach(r => { r.checked = (r.value === s.mode); });
+  const set = (id, val) => { const el = document.getElementById(id); if (el) el.value = val || ''; };
+  set('tgBotToken', s.tgToken);
+  set('tgChatId', s.tgChatId);
+  set('vkToken', s.vkToken);
+  set('vkPeerId', s.vkPeerId);
+  toggleBotSettings(s.mode);
+}
+
+function toggleBotSettings(mode) {
+  const block = document.getElementById('botSettings');
+  if (block) block.style.display = (mode === 'bot') ? 'block' : 'none';
+}
+
+document.querySelectorAll('input[name="notifyMode"]').forEach(radio => {
+  radio.addEventListener('change', () => toggleBotSettings(radio.value));
+});
+
+document.getElementById('saveNotifySettings')?.addEventListener('click', () => {
+  const mode = document.querySelector('input[name="notifyMode"]:checked')?.value || 'client';
+  saveNotifySettings({
+    mode,
+    tgToken: document.getElementById('tgBotToken').value.trim(),
+    tgChatId: document.getElementById('tgChatId').value.trim(),
+    vkToken: document.getElementById('vkToken').value.trim(),
+    vkPeerId: document.getElementById('vkPeerId').value.trim()
+  });
+  const msg = document.getElementById('notifySaved');
+  if (msg) { msg.style.display = 'block'; setTimeout(() => msg.style.display = 'none', 1800); }
+});
+
+async function sendBotNotifications(text) {
+  const s = getNotifySettings();
+  let sent = false;
+
+  if (s.tgToken && s.tgChatId) {
+    try {
+      const resp = await fetch(`https://api.telegram.org/bot${s.tgToken}/sendMessage`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ chat_id: s.tgChatId, text })
+      });
+      if (resp.ok) sent = true;
+      else console.warn('Telegram API error', await resp.text());
+    } catch (e) { console.warn('Telegram send failed', e); }
+  }
+
+  if (s.vkToken && s.vkPeerId) {
+    try {
+      const params = new URLSearchParams({
+        access_token: s.vkToken,
+        v: '5.199',
+        peer_id: s.vkPeerId,
+        message: text,
+        random_id: Date.now()
+      });
+      const resp = await fetch('https://api.vk.com/method/messages.send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: params.toString()
+      });
+      const data = await resp.json();
+      if (data.response) sent = true;
+      else console.warn('VK API error', data);
+    } catch (e) { console.warn('VK send failed', e); }
+  }
+
+  return sent;
+}
+
+/* ============================================================
+   CRM (АДМИНКА)
+   ============================================================ */
+const admin = document.getElementById('admin');
+
+function loadContentForm() {
+  const c = LS.get(KEY_C, null);
+  if (!c) return;
+  const set = (id, val) => { const el = document.getElementById(id); if (el && val) el.value = val; };
+  set('cHeroEyebrow', c.heroEyebrow);
+  set('cHeroTitle', c.heroTitle);
+  set('cHeroDesc', c.heroDesc);
+  set('cVideoUrl', c.videoUrl);
+  set('cLogo', c.logo);
+  set('cFooterTagline', c.footerTagline);
+  set('cFooterLegal', c.footerLegal);
+}
+
+function openAdmin(){
+  admin.classList.add('is-open');
+  document.body.style.overflow='hidden';
+  renderCRM();
+  loadNotifyPanel();
+  loadContentForm();
+}
+function closeAdmin(){
+  admin.classList.remove('is-open');
+  document.body.style.overflow='';
+}
+document.querySelector('.admin-trigger')?.addEventListener('click',e=>{ e.preventDefault(); openAdmin(); });
+document.getElementById('adminClose').addEventListener('click',closeAdmin);
+window.addEventListener('hashchange',()=>{ if(location.hash==='#admin') openAdmin(); else closeAdmin(); });
+if(location.hash==='#admin') openAdmin();
+
+document.querySelectorAll('.admin__tab').forEach(tab=>{
+  tab.addEventListener('click',()=>{
+    document.querySelectorAll('.admin__tab').forEach(t=>t.classList.remove('is-active'));
+    document.querySelectorAll('.admin-panel').forEach(p=>p.classList.remove('is-active'));
+    tab.classList.add('is-active');
+    document.getElementById('panel-'+tab.dataset.tab).classList.add('is-active');
+  });
+});
+
+document.getElementById('clearAllData').addEventListener('click', () => {
+    if(confirm('Вы уверены, что хотите полностью очистить всю статистику и заказы?')) {
+        localStorage.removeItem(KEY_A);
+        localStorage.removeItem(KEY_O);
+        localStorage.removeItem(KEY_L);
+        analytics = { views: 0, carts: 0, orders: 0, events: [] };
+        renderCRM();
+    }
+});
+
+function renderCRM(){
+  const a = LS.get(KEY_A, { views: 0, carts: 0, orders: 0, events: [] });
+  const orders = LS.get(KEY_O,[]);
+  const leads = LS.get(KEY_L,[]);
+
+  // Трафик
+  document.getElementById('kpiViews').textContent = a.views;
+  document.getElementById('kpiCarts').textContent = a.carts;
+  document.getElementById('kpiCreatedOrders').textContent = a.orders;
+  const conv = a.views ? ((a.orders/a.views)*100).toFixed(1)+'%' : '0%';
+  document.getElementById('kpiConv').textContent = conv;
+
+  const tbody = document.getElementById('trafficLog');
+  tbody.innerHTML = a.events.length ? a.events.slice(0,30).map(ev=>`<tr><td>${new Date(ev.t).toLocaleString('ru-RU')}</td><td>${ev.type}</td><td>${ev.label||'—'}</td></tr>`).join('') : '<tr><td colspan="3" class="admin-empty">Пока нет событий.</td></tr>';
+
+  // Заказы
+  const confirmedOrders = orders.filter(o => o.status === 'confirmed');
+  const revenue = confirmedOrders.reduce((s,o)=>s+o.price,0);
+
+  document.getElementById('kpiOrders').textContent = orders.length;
+  document.getElementById('kpiRevenue').textContent = revenue.toLocaleString('ru-RU')+' ₽';
+  document.getElementById('kpiAvg').textContent = (confirmedOrders.length?Math.round(revenue/confirmedOrders.length):0).toLocaleString('ru-RU')+' ₽';
+  document.getElementById('kpiPending').textContent = orders.filter(o=>o.status==='processing').length;
+
+  const ot = document.getElementById('ordersTable');
+  ot.innerHTML = orders.length ? orders.map(o=>`
+    <tr>
+      <td>${o.id}</td>
+      <td>${o.customer}</td>
+      <td>${o.product}</td>
+      <td>${o.price.toLocaleString('ru-RU')} ₽</td>
+      <td><span class="status ${o.status==='confirmed'?'status--done':''}">${o.status==='confirmed'?'Выполнен':'В обработке'}</span></td>
+      <td>${new Date(o.date).toLocaleDateString('ru-RU')}</td>
+      <td>${o.status==='processing'?`<button class="btn-dark" style="padding:4px 8px;font-size:7px" data-confirm="${o.id}">Подтвердить</button>`:'—'}</td>
+    </tr>`).join('') : '<tr><td colspan="7" class="admin-empty">Заказов пока нет.</td></tr>';
+
+  // Заявки
+  document.getElementById('kpiLeadsTotal').textContent = leads.length;
+  document.getElementById('kpiLeadsNew').textContent = leads.filter(l => l.status === 'new').length;
+
+  const lt = document.getElementById('leadsTable');
+  lt.innerHTML = leads.length ? leads.map(l => `
+    <tr>
+      <td>${l.name}</td>
+      <td>${l.contact}</td>
+      <td>${l.message}</td>
+      <td><span class="status ${l.status === 'done' ? 'status--done' : ''}">${l.status === 'done' ? 'Обработана' : 'Новая'}</span></td>
+      <td>${new Date(l.date).toLocaleDateString('ru-RU')}</td>
+      <td>${l.status === 'new' ? `<button class="btn-dark" style="padding:4px 8px;font-size:7px" data-lead="${l.id}">Обработать</button>` : '—'}</td>
+    </tr>`).join('') : '<tr><td colspan="6" class="admin-empty">Заявок пока нет.</td></tr>';
+}
+
+document.getElementById('ordersTable').addEventListener('click', e => {
+  const btn = e.target.closest('[data-confirm]');
+  if (!btn) return;
+  const orders = LS.get(KEY_O, []);
+  const order = orders.find(o => o.id === btn.dataset.confirm);
+  if (order) {
+    order.status = 'confirmed';
+    LS.set(KEY_O, orders);
+    renderCRM();
+  }
+});
+
+document.getElementById('leadsTable').addEventListener('click', e => {
+  const btn = e.target.closest('[data-lead]');
+  if (!btn) return;
+  const leads = LS.get(KEY_L, []);
+  const lead = leads.find(l => l.id === btn.dataset.lead);
+  if (lead) {
+    lead.status = 'done';
+    LS.set(KEY_L, leads);
+    renderCRM();
+  }
+});
+
+/* ============================================================
+   КОНТЕНТ — ФОРМА
+   ============================================================ */
+const contentForm = document.getElementById('contentForm');
+const contentSaved = document.getElementById('contentSaved');
+
+if (contentForm) {
+  contentForm.addEventListener('submit', e => {
+    e.preventDefault();
+    const config = {
+      heroEyebrow: document.getElementById('cHeroEyebrow').value.trim(),
+      heroTitle: document.getElementById('cHeroTitle').value.trim(),
+      heroDesc: document.getElementById('cHeroDesc').value.trim(),
+      videoUrl: document.getElementById('cVideoUrl').value.trim(),
+      logo: document.getElementById('cLogo').value.trim(),
+      footerTagline: document.getElementById('cFooterTagline').value.trim(),
+      footerLegal: document.getElementById('cFooterLegal').value.trim()
+    };
+    LS.set(KEY_C, config);
+    applyConfig();
+    if (contentSaved) {
+      contentSaved.style.display = 'block';
+      setTimeout(() => contentSaved.style.display = 'none', 1800);
+    }
+  });
+}
+
+/* ============================================================
+   ИНИЦИАЛИЗАЦИЯ
+   ============================================================ */
+applyConfig();
+updateCartBadge();
+renderCRM();
+</script>
+</body>
+</html>
